@@ -1,0 +1,31 @@
+name: Build SUPER
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build firmware
+        uses: pioarduino/action@v0.1.0
+        with:
+          command: run
+
+      - name: Check firmware
+        run: |
+          test -s .pio/build/esp32-s3-st7735/firmware.bin
+          ls -lh .pio/build/esp32-s3-st7735/firmware.bin
+
+      - name: Package firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: SUPER-ESP32-S3-ST7735
+          path: |
+            .pio/build/esp32-s3-st7735/firmware.bin
+            .pio/build/esp32-s3-st7735/bootloader.bin
+            .pio/build/esp32-s3-st7735/partitions.bin
